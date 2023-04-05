@@ -1,14 +1,16 @@
 section .data
-	hello db 'hello world', 10	
-	hellolen equ $-hello		; save the length of string in 'hello'
+hello db 'Hello World', 11
+hellolen equ $-hello
+
 section .text
-	global _start
+global _start
 _start:
-	MOV eax, 4			; write register
-	MOV ebx, 1			
-	MOV ecx, hello			; store the string into register
-	MOV edx, hellolen		; store the size of the string
-	int 80h			; endline
-	MOV eax, 1			; exiting the program (below 2 lines)
-	MOV ebx, 0
-	int 80h	
+mov eax, 4
+mov ebx, 1
+mov ecx, hello
+mov edx, hellolen
+int 80h
+
+mov eax, 1
+mov ebx, 0
+int 80h
