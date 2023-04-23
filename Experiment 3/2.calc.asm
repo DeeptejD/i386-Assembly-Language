@@ -16,10 +16,14 @@ section .data
 
     printQuo db "The quotient ", 9
     Qlen equ $-printQuo
+
+    printrem db "The remainder ", 9
+    remlen equ $-printrem
 section .bss
     num1 resb 9
     num2 resb 9
     num3 resb 9
+    num4 resb 9
 
 section .text
     global _start:
@@ -135,7 +139,10 @@ _start:
     sub bl, '0' 
     div bl
     add al, '0' 
+    add ah, '0'
     mov [num3], al
+    mov [num4], ah
+    
 
     ; PRINT QUOTIENT
     mov eax, 4
@@ -147,6 +154,24 @@ _start:
     mov eax, 4
     mov ebx, 1
     mov ecx, num3
+    mov edx, 9
+    int 80h
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, nl
+    mov edx, nllen
+    int 80h
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, printrem
+    mov edx, remlen
+    int 80h
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, num4
     mov edx, 9
     int 80h
 

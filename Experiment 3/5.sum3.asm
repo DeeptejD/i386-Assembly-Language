@@ -12,6 +12,8 @@ section .bss
     num1 resb 9
     num2 resb 9
     num3 resb 9
+    num4 resb 9
+
 section .text
     global _start
 _start:
@@ -35,11 +37,21 @@ _start:
     mov edx, 9
     int 80h
 
+    ; READ NUMBER 2
+    mov eax, 3
+    mov ebx, 2
+    mov ecx, num4
+    mov edx, 9
+    int 80h
+
     ; ADDITION OF NUMBERS
     mov eax, [num1]
     sub eax, '0'
     mov ebx, [num2]
     sub ebx, '0' 
+    add eax, ebx
+    mov ebx, [num4]
+    sub ebx, '0'
     add eax, ebx
     
     ; cmp eax, 9
