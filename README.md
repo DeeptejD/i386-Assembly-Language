@@ -1,11 +1,5 @@
 # Assembly
 
-### Run assembly code here: [NASM]('https://www.tutorialspoint.com/compile_assembly_online.php')
-
-or
-
-### To run assembly code on Windows Terminal
-
 ```
 nasm -f elf54 <file>.asm
 
