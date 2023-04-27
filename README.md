@@ -7,9 +7,11 @@ or
 ### To run assembly code on Windows Terminal
 
 ```
-nasm -f win32 <file>.asm
+nasm -f elf54 <file>.asm
 
-gcc <file>.obj -o <file>.exe
+ld -o name <file>.o
+
+./name
 ```
 
 ### To run assembly code on Linux
