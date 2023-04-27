@@ -1,7 +1,7 @@
 # Assembly
 
 ```
-nasm -f elf54 <file>.asm
+nasm -f elf64 <file>.asm
 
 ld -o name <file>.o
 
