@@ -23,15 +23,25 @@
 %endmacro
 
 section .data
-    num db '5'
-    numlen equ $-num
+    ask db 'Enter: '
+    asklen equ $-ask
 
     nl db "", 10
     nllen equ $-nl
 
+section .bss
+	num resb 9
+
 section .text
     global _start
 _start:
-    write num, numlen
+    write ask, asklen
+    mov eax, 3
+    mov ebx, 2
+    mov ecx, num
+    mov edx, 9
+	int 80h
+
+    write num, 9
     newline
     return

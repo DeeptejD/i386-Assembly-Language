@@ -28,14 +28,14 @@
 %endmacro
 
 %macro SUM 3
-    mov eax, [%1]
-    sub eax, '0'
-    mov ebx, [%2]
-    sub ebx, '0'
-    add eax, ebx
-    add eax, '0'
-    mov [%3], eax
-    int 80h
+	mov al, [%1]
+	sub al, '0'
+	mov bl, [%2]
+	sub bl, '0'
+	add al, bl
+	add al, '0'
+	mov [%3], al
+	int 80h
 %endmacro
 
 %macro DIFF 3
@@ -66,7 +66,7 @@
     div bl
     add al, '0'
     mov [%3], al
-    cmp ah, '0'
+    add ah, '0'
     mov [%4], ah
 
 %endmacro
