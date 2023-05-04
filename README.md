@@ -8,8 +8,6 @@ ld -o name <file>.o
 ./name
 ```
 
-### To run assembly code on Linux
-
 ``` asm
 nasm -f elf <file>.asm
 
