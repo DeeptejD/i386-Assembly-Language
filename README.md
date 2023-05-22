@@ -13,7 +13,7 @@ ld -o name <file>.o
 ```
 nasm -f elf32 <file>.asm
 
-ld -m elf_i386 -o <file>.exe <file>.oś
+ld -m elf_i386 -o <file>.exe <file>.o
 
 ./name
 ```
