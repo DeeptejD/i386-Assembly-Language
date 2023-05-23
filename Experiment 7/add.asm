@@ -55,10 +55,10 @@ add_loop:                   ; this loop will iterate ecx times
     dec esi                 ; moves one digit left
     loop add_loop           ; this checks if esi is zero, if not then loops back to the add_loop
 
-    mov esi, 1             
-    mov al, [sum + esi]
-    sub al, 1
-    mov [sum + esi], al
+    ; mov esi, 1             
+    ; mov al, [sum + esi]
+    ; sub al, 1
+    ; mov [sum + esi], al
 
     ; print the sum
     write show, showlen
