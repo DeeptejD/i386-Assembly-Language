@@ -15,86 +15,80 @@
 %endmacro
 
 section .data
-    display db 'Array: [ 10, -21, 45, 12, -25, 43, 78, 96, -89]', 10
-    displen equ $-display
+    asksize db 'Enter size: '
+    asksizelen equ $-asksize
 
-    showp db 'Positive numbers: '
-    showplen equ $-showp
+    ask db 'Enter'
+    asklen equ $-ask
 
-    shown db 'Negative numbers: '
-    shownlen equ $-shown
+    show db 'sum: '
+    showlen equ $-show
 
-    array dw 10, -21, 45, 12, -25, 43, 78, 96, -89
-    len equ 9
-
-    npos dw 0
-    nneg dw 0
+    array times 10 dw 0
+    len equ 10
 
     nl db '', 10
     nllen equ $-nl
 
 section .bss
-    buff resb 2
+    num resb 9
+    i resb 9
+    element resb 10
+    ans resb 10
 
 section .text
-    global _start
+    global _start:
 _start:
-    write display, displen
+    write asksize, asksizelen
+    read num, 9
 
-    mov esi, array      ; sets esi to point tot he start of the array
-    mov ecx, len        ; sets ecx to the length of the array            
-
-check:                  ; iterates thru each element in the array
-    BT word[esi], 15    ; BT: Bitwise Test, checks the sign bit which is the 15th bit
-    JC N                
-    JMP P
-
-P:
-    inc byte[npos]
-    JMP end
-
-N:
-    inc byte[nneg]
-    JMP end
-
-end:
-    inc esi
-    inc esi
-    loop check
-
-output:
-    write showp, showplen
-    mov bl, [npos]
-    CALL hex_ascii
+    write ask, asklen
     write nl, nllen
+    mov byte[i], 0
 
-    write shown, shownlen
-    mov bl, [nneg]
-    CALL hex_ascii
+    mov esi, array
+
+    input:
+        read element, 2
+        mov ebx, [element]
+        mov [esi], ebx
+
+        inc esi
+        inc byte[i]
+
+        mov al, [i]
+        mov bl, [num]
+        sub bl, '0'
+        cmp al, bl
+        JE exit
+        JMP input
+    exit:
+
+    write show, showlen
     write nl, nllen
+    mov byte[i], 0
+    mov esi, array
 
-mov eax, 1
-int 80h
+	mov byte[ans], 0
+    add:
+        mov ebx, [esi]
+        sub bl, '0'
+	add byte[ans], bl
 
-; Procedures
+        inc esi
+        inc byte[i]
 
-hex_ascii:
-    mov ecx, 2
-    mov edi, buff
+        mov al, [i]
+        mov bl, [num]
 
-    DUP:
-        rol bl, 04
-        mov al, bl
-        and al, 0fh
-        cmp al, 09h
-        jbe NEXT
-        add al, 07h
+        sub bl, '0'
+        cmp al, bl
+        JL add
     
-    NEXT:
-        add al, 30h
-        mov [edi], al
-        inc edi
-        loop DUP
-    
-    write buff, 2
-ret
+	add byte[ans], '0'
+	write ans, 10
+
+	write nl, nllen
+	
+    mov eax, 1
+    int 80h
