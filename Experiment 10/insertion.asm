@@ -91,86 +91,89 @@ _start:
 ; procedures
 
 input:
-    write ask, asklen
-    write nl, nllen
+    write ask, asklen    ; Write the prompt asking for input
+    write nl, nllen      ; Write a newline character
 
-    mov [i], dword '0'
+    mov [i], dword '0'   ; Initialize the counter variable 'i' to zero
 
     loop1:
-        mov esi, [i]
-        cmp esi, [n]
-        jge after1
+        mov esi, [i]        ; Move the value of 'i' into the register esi
+        cmp esi, [n]        ; Compare 'i' with the value in 'n'
+        jge after1          ; If 'i' is greater or equal to 'n', jump to 'after1'
 
-        sub esi, '0'
-        add esi, arr
-        read esi, 1
+        sub esi, '0'        ; Convert the character value of 'i' to its corresponding integer value
+        add esi, arr        ; Calculate the address of arr[i]
+        read esi, 1         ; Read a single character and store it at arr[i]
 
-        inc dword[i]
-        jmp loop1
-    
+        inc dword[i]        ; Increment the value of 'i' by 1
+        jmp loop1           ; Jump back to the beginning of the loop
+
     after1:
-        ret
+        ret                 ; Return from the procedure
 
 display:
-    write pass, passlen
-    write j, 9
-    write arrow, arlen
-    mov [i], dword '0'
+    write pass, passlen        ; Write the string "pass"
+    write j, 9                 ; Write the variable 'j' with a width of 9 characters
+    write arrow, arlen         ; Write the string "->"
+    mov [i], dword '0'         ; Initialize the counter variable 'i' to zero
 
     loop2:
-        mov esi, [i]
-        cmp esi, [n]
-        jge after2
+        mov esi, [i]               ; Move the value of 'i' into the register esi
+        cmp esi, [n]               ; Compare 'i' with the value in 'n'
+        jge after2                 ; If 'i' is greater or equal to 'n', jump to 'after2'
 
-        sub esi, '0'
-        add esi, arr
-        write esi, 1 
-        write space, splen
-        inc dword[i]
-        jmp loop2
+        sub esi, '0'               ; Convert the character value of 'i' to its corresponding integer value
+        add esi, arr               ; Calculate the address of arr[i]
+        write esi, 1               ; Write the value at the calculated address (arr[i])
+        write space, splen        ; Write a space character
+        inc dword[i]               ; Increment the value of 'i' by 1
+        jmp loop2                  ; Jump back to the beginning of the loop
+
     after2:
-        write nl, nllen
-        ret
+        write nl, nllen            ; Write a newline character
+        ret                        ; Return from the procedure
 
 insertionsort:
-    mov eax, 1 ; al -> counter for outer loop, init 1
-    mov bl, [n]
-    sub bl, '0'
+    mov eax, 1                  ; Initialize the counter variable 'al' to 1
+    mov bl, [n]                 ; Move the value of 'n' into the register bl
+    sub bl, '0'                 ; Convert the character value of 'n' to its corresponding integer value
 
     loop3:
-        cmp al, bl
-        jge after3
+        cmp al, bl                 ; Compare the value in 'al' with 'bl'
+        jge after3                  ; If 'al' is greater or equal to 'bl', jump to 'after3'
 
-        pushad
-        call display
-        popad
+        pushad                      ; Save the values of all registers on the stack
 
-        mov ecx, 0
-        mov cl, al
-        sub cl, 1 ; counter for inner loop, init 1
+        call display                ; Call the 'display' procedure to show the current state of 'arr'
 
-        mov dl, [arr + eax]
-        
+        popad                       ; Restore the values of registers from the stack
+
+        mov ecx, 0                  ; Initialize the counter variable 'ecx' to zero
+        mov cl, al                  ; Move the value of 'al' into the lower byte of 'ecx'
+        sub cl, 1                   ; Decrement 'cl' by 1 to start the inner loop
+
+        mov dl, [arr + eax]         ; Move the value at 'arr[eax]' into the register 'dl'
+
         loop4:
-            cmp cl, 0 ; repeat until cl >= 0
-            jl after4
+            cmp cl, 0                ; Repeat until 'cl' is less than 0
+            jl after4                 ; If 'cl' is less than 0, jump to 'after4'
 
-            cmp dl, [arr + ecx]
-            jge after4
+            cmp dl, [arr + ecx]      ; Compare 'dl' with the value at 'arr[ecx]'
+            jge after4                ; If 'dl' is greater or equal, jump to 'after4'
 
-            mov dh, [arr + ecx]
-            mov [arr + ecx + 1], dh
+            mov dh, [arr + ecx]      ; Move the value at 'arr[ecx]' into the register 'dh'
+            mov [arr + ecx + 1], dh  ; Move the value of 'dh' into 'arr[ecx + 1]'
 
-            dec ecx
-            jmp loop4
+            dec ecx                   ; Decrement the counter 'ecx' by 1
+            jmp loop4                 ; Jump back to the beginning of the inner loop
 
         after4:
-            mov [arr + ecx +  1], dl
+            mov [arr + ecx + 1], dl  ; Move the value of 'dl' into 'arr[ecx + 1]'
 
-            inc al
+            inc al                     ; Increment the value of 'al' by 1
 
-            inc byte[j]
-            jmp loop3
-        
-        after3:
-            ret
+            inc byte[j]                ; Increment the value of 'j' by 1
+            jmp loop3                  ; Jump back to the beginning of the outer loop
+
+    after3:
+        ret                           ; Return from the procedure
