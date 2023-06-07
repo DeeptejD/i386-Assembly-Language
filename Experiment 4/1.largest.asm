@@ -1,85 +1,88 @@
+; LARGEST OF TWO NUMBERS
+
 section .data
-	ask db 'Enter a number: '
+	nl db "", 10
+	nllen equ $-nl
+
+	ask db 'Enter: '
 	asklen equ $-ask
 
-	tell db 'The larger number is:'
-	telllen equ $-tell
+	show db 'Largest: '
+	showlen equ $-show
 
-	eq db 'equal'
+	eq db 'Equal'
 	eqlen equ $-eq
 
+
+; WRITE MACRO
+%macro write 2
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+; READ MACRO
+%macro read 2
+	mov eax, 3
+	mov ebx, 2
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+; NEWLINE MACRO
+%macro endl 0
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, nl
+	mov edx, nllen
+	int 80h
+%endmacro
+
+; DECLARE VARIABLES
 section .bss
-	num1 resb 4
-	num2 resb 4
-	large resb 4
+	a resb 1
+	b resb 1
+	largest resb 1
+
 
 section .text
-	global_start
-
+	global _start
 _start:
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, ask
-	mov edx, asklen
-	int 80h
 
-	;input first number
-	mov eax, 3
-	mov ebx, 2
-	mov ecx, num1
-	int 80h
+	write ask, asklen
+	read a, 2
+	write ask, asklen
+	read b, 2
 
-	;print the input message
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, ask
-	mov edx, asklen
-	int 80h
+	; FIND LARGEST
+	mov al, [a]
+	mov bl, [b]
+	cmp al, bl
+	je equal
+	jl bg
+	jg ag
 
-	;input second number
-	mov eax, 3
-	mov ebx, 2
-	mov ecx, num2
-	int 80h
-
-	;print the output message
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, tell
-	mov edx, telllen
-	int 80h
-
-	;compare the two numbers
-	mov eax, [num1]
-	mov ebx, [num2]
-	cmp eax, ebx
-
-	JE E
-	JG L1 ;checks whether num1 > num2
-	JMP L2
-
-	L1:
-	mov [large], eax
-	JMP PRINT
-
-	L2:
-	mov [large], ebx
-	JMP PRINT
-
-	E:
-	mov [large], eax
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, eq
-	mov edx, eqlen
-	int 80h
-
-	PRINT:
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, large
-	int 80h
-
+	equal:
+		write eq, eqlen
+		endl
+		jmp exit
+	
+	ag:
+		write show, showlen
+		write a, 1
+		endl
+		jmp exit
+	
+	bg:
+		write show, showlen
+		write b, 1
+		endl
+	
+	exit:
+	; EXIT CALL
 	mov eax, 1
 	mov ebx, 0
 	int 80h

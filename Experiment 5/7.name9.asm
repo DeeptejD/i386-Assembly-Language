@@ -1,3 +1,18 @@
+; PRINT NAME 9 TIMES
+
+section .data
+    nl db "", 10
+    nllen equ $-nl
+
+    ask db 'Enter name: '
+    asklen equ $-ask
+
+    space db ' '
+    spacelen equ $-space
+
+    name times 100 db 0
+
+; WRITE MACRO
 %macro write 2
     mov eax, 4
     mov ebx, 1
@@ -6,6 +21,7 @@
     int 80h
 %endmacro
 
+; READ MACRO
 %macro read 2
     mov eax, 3
     mov ebx, 2
@@ -14,7 +30,8 @@
     int 80h
 %endmacro
 
-%macro newline 0
+; NEWLINE MACRO
+%macro endl 0
     mov eax, 4
     mov ebx, 1
     mov ecx, nl
@@ -22,44 +39,32 @@
     int 80h
 %endmacro
 
-%macro space 0
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, s
-    mov edx, slen
-    int 80h
-%endmacro
-
-%macro return 0
-    mov eax, 1
-    int 80h
-%endmacro
-
-section .data
-    ask db "Enter name: "
-    asklen equ $-ask
-
-    s db " "
-    slen equ $-s
-
+; DECLARE VARIABLES
 section .bss
-    name resb 9
-    count resb 9
+     count resb 1
+
 
 section .text
     global _start
 _start:
+
     write ask, asklen
-    read name, 9
+    read name, 100
+    mov [count], byte '1'
 
-    mov byte [count], '1'
-
-loop:
-    write count, 9
-    space
-    write name, 9
-    inc byte [count]
-    cmp byte [count], '9'
-    jle loop
-
-    return
+    loop:
+        write count, 1
+        write space, spacelen
+        write name, 100
+        endl
+        mov al, [count]
+        cmp al, '9'
+        je exit
+        inc byte [count]
+        jmp loop
+    
+    exit:
+    ; EXIT CALL
+    mov eax, 1
+    mov ebx, 0
+    int 80h

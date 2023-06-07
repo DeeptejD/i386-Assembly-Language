@@ -1,73 +1,86 @@
+; CHECK IF THE ENTERED NUMBER IS GREATER, SMALLER OR EQUAL TO 5
+
 section .data
-	ask db 'Enter a number:'
+	nl db "", 10
+	nllen equ $-nl
+
+	ask db 'Enter: '
 	asklen equ $-ask
 
-	is db 'The entered number is greater than 5'
-	islen equ $-is
-	
-	isnot db 'The entered number is not greater than 5'
-	isnotlen equ $-isnot
-	
-	equal db 'The entered number is equal to 5'
-	eqlen equ $-equal
-	
-section .bss
-	num1 resb 4
-	;five resb 4
-	
-section .text
-	global_start
-_start:
+	eq db ' is Equal to 5'
+	eqlen equ $-eq
+
+	yes db ' is greater than 5'
+	yeslen equ $-yes
+
+	no db ' is less than 5'
+	nolen equ $-no
+
+
+; WRITE MACRO
+%macro write 2
 	mov eax, 4
 	mov ebx, 1
-	mov ecx, ask
-	mov edx, asklen
+	mov ecx, %1
+	mov edx, %2
 	int 80h
-	
+%endmacro
+
+; READ MACRO
+%macro read 2
 	mov eax, 3
 	mov ebx, 2
-	mov ecx, num1
+	mov ecx, %1
+	mov edx, %2
 	int 80h
-	
-	mov al, [num1]
-	sub al, '0'
-	mov bl, '5'
-	sub bl, '0'
-	cmp al, bl
-	
-	JE L1
-	JG L2
-	JMP L3
-	
-	L1:
+%endmacro
+
+; NEWLINE MACRO
+%macro endl 0
 	mov eax, 4
 	mov ebx, 1
-	mov ecx, equal
-	mov edx, eqlen
+	mov ecx, nl
+	mov edx, nllen
 	int 80h
-	JMP L4
+%endmacro
+
+; DECLARE VARIABLES
+section .bss
+	a resb 1
+
+
+section .text
+	global _start
+_start:
+
+	write ask, asklen
+	read a, 2
+
+	mov al, [a]
+	cmp al, '5'
+	je equal
+	jl less
+	jg greater
+
+	less:
+		write a, 1
+		write no, nolen
+		endl
+		jmp exit
 	
-	L2:
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, is
-	mov edx, islen
-	int 80h
-	JMP L4
+	greater:
+		write a, 1
+		write yes, yeslen
+		endl
+		jmp exit
 	
-	L3:
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, isnot
-	mov edx, isnotlen
-	int 80h
-	JMP L4
-	
-	L4:
-	mov eax, 1
-	int 80h
-	
+	equal:
+		write a, 1
+		write eq, eqlen
+		endl
+
+	exit:
+	; EXIT CALL
 	mov eax, 1
 	mov ebx, 0
 	int 80h
-	

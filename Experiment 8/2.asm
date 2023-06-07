@@ -1,3 +1,22 @@
+; SUM OF ELEMENTS IN AN ARRAY
+
+section .data
+    nl db "", 10
+    nllen equ $-nl
+
+    asksize db 'Enter number of elements: '
+    asksizelen equ $-asksize
+
+    ask db 'Enter elements'
+    asklen equ $-ask
+
+    show db 'Sum: '
+    showlen equ $-show
+
+    array times 100 db 0
+
+
+; WRITE MACRO
 %macro write 2
     mov eax, 4
     mov ebx, 1
@@ -6,89 +25,82 @@
     int 80h
 %endmacro
 
+; READ MACRO
 %macro read 2
     mov eax, 3
     mov ebx, 2
-    mov ecx, %1 
+    mov ecx, %1
     mov edx, %2
     int 80h
 %endmacro
 
-section .data
-    asksize db 'Enter size: '
-    asksizelen equ $-asksize
+; NEWLINE MACRO
+%macro endl 0
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, nl
+    mov edx, nllen
+    int 80h
+%endmacro
 
-    ask db 'Enter'
-    asklen equ $-ask
-
-    show db 'sum: '
-    showlen equ $-show
-
-    array times 10 dw 0
-    len equ 10
-
-    nl db '', 10
-    nllen equ $-nl
-
+; DECLARE VARIABLES
 section .bss
-    num resb 9
-    i resb 9
-    element resb 10
-    ans resb 10
+    count resb 1
+    n resb 1
+    element resb 1
+    sum resb 1
+
 
 section .text
-    global _start:
+    global _start
 _start:
     write asksize, asksizelen
-    read num, 9
-
-    write ask, asklen
-    write nl, nllen
-    mov byte[i], 0
-
+    read n, 2
+    mov byte [count], 0
     mov esi, array
-
+    write ask, asklen
+    endl
     input:
         read element, 2
         mov ebx, [element]
         mov [esi], ebx
 
         inc esi
-        inc byte[i]
+        inc byte [count]
 
-        mov al, [i]
-        mov bl, [num]
+        mov al, [count]
+        mov bl, [n]
         sub bl, '0'
+
         cmp al, bl
-        JE exit
-        JMP input
+        je exit
+        jmp input
+    
     exit:
-
-    write show, showlen
-    write nl, nllen
-    mov byte[i], 0
     mov esi, array
-
-	mov byte[ans], 0
-    add:
+    mov byte [count], 0
+    mov byte [sum], 0
+    
+    fsum:
         mov ebx, [esi]
         sub bl, '0'
-	add byte[ans], bl
+        add byte [sum], bl
 
         inc esi
-        inc byte[i]
+        inc byte[count]
 
-        mov al, [i]
-        mov bl, [num]
-
+        mov al, [count]
+        mov bl, [n]
         sub bl, '0'
         cmp al, bl
-        JL add
+        jl fsum
     
-	add byte[ans], '0'
-	write ans, 10
+    add byte[sum], '0'
+    write show, showlen
+    write sum, 1
+    endl
 
-	write nl, nllen
-	
+    ; EXIT CALL
     mov eax, 1
+    mov ebx, 0
     int 80h

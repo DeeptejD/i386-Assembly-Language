@@ -1,5 +1,3 @@
-; SUM OF THRE NUMBERS
-
 section .data
     nl db "", 10
     nllen equ $-nl
@@ -7,7 +5,7 @@ section .data
     ask db 'Enter: '
     asklen equ $-ask
 
-    show db 'Sum: '
+    show db 'The numbers'
     showlen equ $-show
 
 
@@ -38,41 +36,29 @@ section .data
     int 80h
 %endmacro
 
+; CHANGE THIS TO THE NUMBER OF DIGITS OF THE NUMBER
+size equ 5
+
 ; DECLARE VARIABLES
 section .bss
-    a resb 1
-    b resb 1
-    c resb 1
-    sum resb 1
+    num1 resb size
+    num2 resb size
 
 section .text
     global _start
 _start:
 
     write ask, asklen
-    read a, 2
+    read num1, size
     write ask, asklen
-    read b, 2
-    write ask, asklen
-    read c, 2
-
-    ; ADDITION
-    mov al, [a]
-    mov bl, [b]
-    sub al, '0'
-    sub bl, '0'
-    add al, bl
-    mov bl, [c]
-    sub bl, '0'
-    add al, bl
-    add al, '0'
-    mov [sum], al
-
+    read num2, size
     write show, showlen
-    write sum, 1
     endl
+    write num1, size
+    write num2, size
 
-    ; EXIT CALL
+
+; EXIT CALL
     mov eax, 1
     mov ebx, 0
     int 80h

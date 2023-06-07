@@ -1,72 +1,69 @@
 section .data
-    sys_write equ 4     ; equ directive
-    sys_exit equ 1
-    stdin equ 0
-    stdout equ 1
-    read1 db "Enter numbers: ", 10
-    numlen1 equ $-read1
+    nl db "", 10
+    nllen equ $-nl
 
-    print db "The sum ", 9
-    printlen equ $-print
+    ask db 'Enter: '
+    asklen equ $-ask
+
+    show db 'Sum: '
+    showlen equ $-show
+
+
+; WRITE MACRO
+%macro write 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+; READ MACRO
+%macro read 2
+    mov eax, 3
+    mov ebx, 2
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+; NEWLINE MACRO
+%macro endl 0
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, nl
+    mov edx, nllen
+    int 80h
+%endmacro
+
+; DECLARE VARIABLES
 section .bss
-    num1 resb 9
-    num2 resb 9
-    num3 resb 9
+    num1 resb 1
+    num2 resb 1
+    res resb 1
+
 section .text
     global _start
 _start:
-    mov eax, sys_write
-    mov ebx, stdout
-    mov ecx, read1
-    mov edx, numlen1
-    int 80h
-    
-    ; READ NUMBER 1
-    mov eax, 3
-    mov ebx, 2
-    mov ecx, num1
-    mov edx, 9
-    int 80h
 
-    ; READ NUMBER 2
-    mov eax, 3
-    mov ebx, 2
-    mov ecx, num2
-    mov edx, 9
-    int 80h
+    write ask, asklen
+    read num1, 2        ; i've added 2 cuz, while taking input this shit takes the enter as the input for the next read stmt, trust me its crazy, so 2, 1 byte for the actual number and 1 for the enter
+    write ask, asklen
+    read num2, 2
+    sub [num1], byte '0'
+    sub [num2], byte '0'
 
-    ; ADDITION OF NUMBERS
-    mov eax, [num1]
-    sub eax, '0'
-    mov ebx, [num2]
-    sub ebx, '0' 
-    add eax, ebx
-    
-    ; cmp eax, 9
-    
-    ; jnz ans
-    
-    ; add eax, 'A'
-    ; sub eax, 10
-    
-    ; ans:
-    
-    add eax, '0' 
-    mov [num3], eax
+    mov al, [num1]
+    mov bl, [num2]
+    add al, bl
+    add al, '0'
+    mov [res], al
 
-    mov eax, sys_write
-    mov ebx, stdout
-    mov ecx, print
-    mov edx, printlen
-    int 80h
+    write show, showlen
+    write res, 2
+    endl
 
-    ; PRINT THE SUM
-    mov eax, sys_write
-    mov ebx, stdout
-    mov ecx, num3
-    mov edx, 9
-    int 80h
-
-    mov eax, sys_exit
-    mov ebx, stdin
+; EXIT CALL
+    mov eax, 1
+    mov ebx, 0
     int 80h

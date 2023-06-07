@@ -1,186 +1,130 @@
 section .data
-    read1 db "Enter numbers: ", 10
-    numlen1 equ $-read1
-
     nl db "", 10
     nllen equ $-nl
 
-    printSum db "The sum ", 9
-    Slen equ $-printSum
-    
-    printDiff db "The difference ", 9
-    Dlen equ $-printDiff
+    ask db 'Enter number: '
+    asklen equ $-ask
 
-    printProd db "The product ", 9
-    Plen equ $-printProd
+    _sum db 'Sum: '
+    _sumlen equ $-_sum
 
-    printQuo db "The quotient ", 9
-    Qlen equ $-printQuo
+    _diff db 'Diff: '
+    _difflen equ $-_diff
 
-    printrem db "The remainder ", 9
-    remlen equ $-printrem
+    _pro db 'Product: '
+    _prolen equ $-_pro
+
+    _quo db 'Quotient: '
+    _quolen equ $-_quo
+
+    _rem db 'Remainder: '
+    _remlen equ $-_rem
+
+
+; WRITE MACRO
+%macro write 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+; READ MACRO
+%macro read 2
+    mov eax, 3
+    mov ebx, 2
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+; NEWLINE MACRO
+%macro endl 0
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, nl
+    mov edx, nllen
+    int 80h
+%endmacro
+
+; DECLARE VARIABLES
 section .bss
-    num1 resb 9
-    num2 resb 9
-    num3 resb 9
-    num4 resb 9
+    a resb 9
+    b resb 9
+    sum resb 9
+    diff resb 9
+    prod resb 9
+    quo resb 9
+    rem resb 9
 
 section .text
-    global _start:
+    global _start
 _start:
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, read1
-    mov edx, numlen1
-    int 80h
 
-     ; READ NUMBER 1
-    mov eax, 3
-    mov ebx, 2
-    mov ecx, num1
-    mov edx, 9
-    int 80h
+    write ask, asklen
+    read a, 9
+    write ask, asklen
+    read b, 9
 
-    ; READ NUMBER 2
-    mov eax, 3
-    mov ebx, 2
-    mov ecx, num2
-    mov edx, 9
-    int 80h
-
-    ; ADDITION OF NUMBERS -------------->
-    mov eax, [num1]
-    sub eax, '0'
-    mov ebx, [num2]
-    sub ebx, '0' 
-    add eax, ebx
-    add eax, '0' 
-    mov [num3], eax
-
-    ; PRINT SUM
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, printSum
-    mov edx, Slen
-    int 80h
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, num3
-    mov edx, 9
-    int 80h
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, nl
-    mov edx, nllen
-    int 80h
-
-    ; DIFFERENCE OF NUMBERS -------------->
-    mov eax, [num1]
-    sub eax, '0'
-    mov ebx, [num2]
-    sub ebx, '0' 
-    sub eax, ebx
-    add eax, '0' 
-    mov [num3], eax
-
-    ; PRINT DIFFERENCE
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, printDiff
-    mov edx, Dlen
-    int 80h
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, num3
-    mov edx, 9
-    int 80h
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, nl
-    mov edx, nllen
-    int 80h
-
-    ; PRODUCT OF NUMBERS -------------->
-    mov al, [num1]
+    ; SUM
+    mov al, [a]
+    mov bl, [b]
     sub al, '0'
-    mov bl, [num2]
-    sub bl, '0' 
+    sub bl, '0'
+    add al, bl
+    add al, '0'
+    mov [sum], al
+
+    write _sum, _sumlen
+    write sum, 9
+    endl
+
+    ; DIFF
+    mov al, [a]
+    mov bl, [b]
+    sub al, '0'
+    sub bl, '0'
+    sub al, bl
+    add al, '0'
+    mov [diff], al
+
+    write _diff, _difflen
+    write diff, 9
+    endl
+
+    ; PRODUCT
+    mov al, [a]
+    mov bl, [b]
+    sub al, '0'
+    sub bl, '0'
     mul bl
-    add al, '0' 
-    mov [num3], al
+    add al, '0'
+    mov [prod], al
 
-    ; PRINT PRODUCT
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, printProd
-    mov edx, Plen
-    int 80h
+    write _pro, _prolen
+    write prod, 9
+    endl
 
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, num3
-    mov edx, 9
-    int 80h
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, nl
-    mov edx, nllen
-    int 80h
-
-    ; DIVISION OF NUMBERS -------------->
-    mov al, [num1]
+    ; DIVISION
+    mov al, [a]
+    mov bl, [b]
     sub al, '0'
-    mov bl, [num2]
-    sub bl, '0' 
+    sub bl, '0'
     div bl
-    add al, '0' 
+    add al, '0'
     add ah, '0'
-    mov [num3], al
-    mov [num4], ah
-    
+    mov [quo], al
+    mov [rem], ah
 
-    ; PRINT QUOTIENT
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, printQuo
-    mov edx, Qlen
-    int 80h
+    write _quo, _quolen
+    write quo, 9
+    endl
+    write _rem, _remlen
+    write rem, 9
+    endl
 
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, num3
-    mov edx, 9
-    int 80h
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, nl
-    mov edx, nllen
-    int 80h
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, printrem
-    mov edx, remlen
-    int 80h
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, num4
-    mov edx, 9
-    int 80h
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, nl
-    mov edx, nllen
-    int 80h
-
+    ; EXIT CALL
     mov eax, 1
     mov ebx, 0
     int 80h

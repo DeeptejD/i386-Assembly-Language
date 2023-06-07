@@ -1,0 +1,65 @@
+cuz i lost my snippets twice :')
+
+{
+	// Place your snippets for assembly here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"Boilerplate": {
+		"prefix" : "boi",
+		"body" : [
+			"section .data",
+				"\tnl db \"\", 10",
+				"\tnllen equ $-nl\n\n\n",
+
+			"; WRITE MACRO",
+			"%macro write 2",
+				"\tmov eax, 4",
+				"\tmov ebx, 1",
+				"\tmov ecx, %1",
+				"\tmov edx, %2",
+				"\tint 80h",
+			"%endmacro\n",
+			
+			"; READ MACRO",
+			"%macro read 2",
+				"\tmov eax, 3",
+				"\tmov ebx, 2",
+				"\tmov ecx, %1",
+				"\tmov edx, %2",
+				"\tint 80h",
+			"%endmacro\n",
+			
+			"; NEWLINE MACRO",
+			"%macro endl 0",
+				"\tmov eax, 4",
+				"\tmov ebx, 1",
+				"\tmov ecx, nl",
+				"\tmov edx, nllen",
+				"\tint 80h",
+			"%endmacro\n",
+			
+			"; DECLARE VARIABLES",
+			"section .bss\n\n",
+			
+			"section .text",
+				"\tglobal _start",
+			"_start:\n",
+				"\t${1:CODE!}",
+			"\n",
+			"; EXIT CALL",
+			"\tmov eax, 1",
+			"\tmov ebx, 0",
+			"\tint 80h"
+		]
+	}
+}

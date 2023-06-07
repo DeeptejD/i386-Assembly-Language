@@ -1,85 +1,86 @@
+; SMALLEST OF TWO NUMBERS
+
 section .data
-	ask db 'Enter a number: '
+	nl db "", 10
+	nllen equ $-nl
+
+	ask db 'Enter: '
 	asklen equ $-ask
 
-	tell db 'The smaller number is:'
-	telllen equ $-tell
+	show db 'Smallest: '
+	showlen equ $-show
 
-	eq db 'equal'
+	eq db 'Equal'
 	eqlen equ $-eq
 
+; WRITE MACRO
+%macro write 2
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+; READ MACRO
+%macro read 2
+	mov eax, 3
+	mov ebx, 2
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+; NEWLINE MACRO
+%macro endl 0
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, nl
+	mov edx, nllen
+	int 80h
+%endmacro
+
+; DECLARE VARIABLES
 section .bss
-	num1 resb 4
-	num2 resb 4
-	small resb 4
+	a resb 1
+	b resb 1
+
 
 section .text
-	global_start
-
+	global _start
 _start:
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, ask
-	mov edx, asklen
-	int 80h
 
-	;input first number
-	mov eax, 3
-	mov ebx, 2
-	mov ecx, num1
-	int 80h
+	write ask, asklen
+	read a, 2
+	write ask, asklen
+	read b, 2
 
-	;print the input message
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, ask
-	mov edx, asklen
-	int 80h
+	mov al, [a]
+	mov bl, [b]
 
-	;input second number
-	mov eax, 3
-	mov ebx, 2
-	mov ecx, num2
-	int 80h
+	cmp al, bl
+	je equal
+	jl a_less
+	jg b_less
 
-	;print the output message
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, tell
-	mov edx, telllen
-	int 80h
+	a_less:
+		write show, showlen
+		write a, 1
+		endl
+		jmp exit
+	
+	b_less:
+		write show, showlen
+		write b, 1
+		endl
+		jmp exit
+	
+	equal:
+		write eq, eqlen
+		endl
 
-	;compare the two numbers
-	mov eax, [num1]
-	mov ebx, [num2]
-	cmp eax, ebx
-
-	JE E
-	JG L1 ;checks whether num1 > num2
-	JMP L2
-
-	L1:
-	mov [small], ebx
-	JMP PRINT
-
-	L2:
-	mov [small], eax
-	JMP PRINT
-
-	E:
-	mov [small], eax
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, eq
-	mov edx, eqlen
-	int 80h	
-
-	PRINT:
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, small
-	int 80h
-
+	exit:
+	; EXIT CALL
 	mov eax, 1
 	mov ebx, 0
 	int 80h

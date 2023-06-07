@@ -1,43 +1,51 @@
-; 211105017@Deeptej
+; FIB USING PROCEDURES
+
 section .data
+    nl db "", 10
+    nllen equ $-nl
+
     ask db 'Enter: '
     asklen equ $-ask
 
     show db 'Fibonacci: '
     showlen equ $-show
 
-    nl db '', 10
-    nllen equ $-nl
+    space db ' '
+    spacelen equ $-space
 
+; DECLARE VARIABLES
 section .bss
-    num resb 5
-    n1 resb 5
-    n2 resb 5
-    n3 resb 5
-    n4 resb 5
+    i resb 1
+    n resb 1
+    a resb 1
+    b resb 1
+    c resb 1
+
 
 section .text
     global _start
 _start:
-
     mov ecx, ask
     mov edx, asklen
-    call print
+    call write
 
-    mov ecx, num
-    mov edx, 5
+    mov ecx, n
+    mov edx, 1
     call read
 
     mov ecx, show
     mov edx, showlen
-    call print
+    call write
 
     call fib
+    call endl
 
+    ; EXIT CALL
     mov eax, 1
+    mov ebx, 0
     int 80h
 
-print:
+write:
     mov eax, 4
     mov ebx, 1
     int 80h
@@ -49,86 +57,74 @@ read:
     int 80h
 ret
 
-newline:
-    mov eax, 4
-    mov ebx, 1
+endl:
     mov ecx, nl
     mov edx, nllen
+    call write
     int 80h
 ret
 
 formula:
-    mov eax, [n2]
-    sub eax, '0'
+    mov al, [a]
+    mov bl, [b]
+    sub al, '0'
+    sub bl, '0'
+    add al, bl
+    add al, '0'
+    mov [c], al
+ret
 
-    mov ebx, [n3]
-    sub ebx, '0'
-
-    add eax, ebx ; adding n2 and n3 to give next term
-    add eax, '0'
-
-    mov [n4], eax
+makespace:
+    mov ecx, space
+    mov edx, spacelen
+    call write
 ret
 
 fib:
-    ; init first 3 terms
-    mov byte[n1], '0'
-    mov byte[n2], '0'
-    mov byte[n3], '1'
+    mov [i], byte '0'
+    mov [a], byte '0'
+    mov [b], byte '1'
 
-    mov al, byte[n1]
-    cmp al, byte[num]
-    JL L1
-    JMP L4
+    mov al, [n]
+    cmp al, '0'
+    je exit
 
-L1:
-    ; printing the first term
-    mov ecx, n2
-    mov edx, 5
-    call print
+    mov ecx, a
+    mov edx, 1
+    call write
+    call makespace
+    inc byte[i]
 
-    inc byte[n1]
-    mov al, [n1]
+    mov al, [i]
+    cmp al, byte[n]
+    je exit
 
-    cmp al, byte[num]
-    JL L2
-    JMP L4
+    mov ecx, b
+    mov edx, 1
+    call write
+    call makespace
 
-L2:
-    ; printing the second term
-    mov ecx, n3
-    mov edx,5
-    call print
+    inc byte[i]
+    mov al, [i]
+    cmp al, byte[n]
+    je exit
 
-    inc byte[n1]
-    mov al, [n1]
+    loop:
+        call formula
+        mov ecx, c
+        mov edx, 1
+        call write
+        call makespace
 
-    cmp al, byte[num]
-    JL L3
-    JMP L4
+        mov al, [b]
+        mov [a], al
+        mov al, [c]
+        mov [b], al
 
-L3:
-    ; calculating the third term
-    call formula
-
-    mov ecx, n4
-    mov edx, 5
-    call print ; prints the next term
-
-    mov al, [n3]
-    mov [n2], al
-
-    mov al, [n4]
-    mov [n3], al
-
-    inc byte[n1]
-
-    mov al, [n1]
-    cmp al, byte[num]
-
-    JL L3
-    JMP L4
-
-L4:
-    call newline
+        inc byte[i]
+        mov al, [i]
+        cmp al, byte[n]
+        je exit
+        jmp loop
+    exit:
 ret

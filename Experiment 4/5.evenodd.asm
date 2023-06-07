@@ -1,56 +1,80 @@
+; CHECK IF A NUMBER IS EVEN OR ODD
+
 section .data
-	ask db 'Enter a number: '
+	nl db "", 10
+	nllen equ $-nl
+
+	ask db 'Enter: '
 	asklen equ $-ask
-	
-	even db 'Even'
-	evenlen equ $-even
 
-	odd db 'Odd'
-	oddlen equ $-odd
+	yes db ' is an Even number'
+	yeslen equ $-yes
 
-section .bss
-	num1 resb 4
+	no db ' is on Odd number'
+	nolen equ $-no
 
-section .text
-	global_start
 
-_start:
+; WRITE MACRO
+%macro write 2
 	mov eax, 4
 	mov ebx, 1
-	mov ecx, ask
-	mov edx, asklen
+	mov ecx, %1
+	mov edx, %2
 	int 80h
-	
+%endmacro
+
+; READ MACRO
+%macro read 2
 	mov eax, 3
 	mov ebx, 2
-	mov ecx, num1
+	mov ecx, %1
+	mov edx, %2
 	int 80h
-	
-	mov al, [num1]
+%endmacro
+
+; NEWLINE MACRO
+%macro endl 0
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, nl
+	mov edx, nllen
+	int 80h
+%endmacro
+
+; DECLARE VARIABLES
+section .bss
+	a resb 1
+
+
+section .text
+	global _start
+_start:
+
+	write ask, asklen
+	read a, 2
+
+	mov al, [a]
 	sub al, '0'
-	mov bl, '2'
-	sub bl, '0'
+	mov bl, 2
 	div bl
 	cmp ah, 0
+	je true
+	jmp false
+
+	true:
+		write a, 1
+		write yes, yeslen
+		endl
+		jmp exit
 	
-	JE L1
-	JMP L2
+	false:
+		write a, 1
+		write no, nolen
+		endl
+		jmp exit
 	
-	L1:
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, even
-	mov edx, evenlen
-	int 80h
-	JMP L3
-	
-	L2:
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, odd
-	mov edx, oddlen
-	int 80h
-	
-	L3:
+	exit:
+	; EXIT CALL
 	mov eax, 1
-	int 80h
+	mov ebx, 0
+	int 80h	

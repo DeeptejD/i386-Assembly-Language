@@ -1,116 +1,110 @@
+; FIND THE GREATEST OF THREE NUMBERS
+
 section .data
-	ask db 'Enter a number: '
+	nl db "", 10
+	nllen equ $-nl
+
+	ask db 'Enter: '
 	asklen equ $-ask
 
-	tell db 'The larger number is:'
-	telllen equ $-tell
+	show db 'Largest: '
+	showlen equ $-show
 
-	eq db 'equal'
+	eq db 'Equal'
 	eqlen equ $-eq
 
+
+; WRITE MACRO
+%macro write 2
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+; READ MACRO
+%macro read 2
+	mov eax, 3
+	mov ebx, 2
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+; NEWLINE MACRO
+%macro endl 0
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, nl
+	mov edx, nllen
+	int 80h
+%endmacro
+
+; DECLARE VARIABLES
 section .bss
-	num1 resb 4
-	num2 resb 4
-	num3 resb 4
-	large resb 4
+	a resb 1
+	b resb 1
+	c resb 1
+	largest resb 1
+
 
 section .text
-	global_start
-
+	global _start
 _start:
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, ask
-	mov edx, asklen
-	int 80h
 
-	;input first number
-	mov eax, 3
-	mov ebx, 2
-	mov ecx, num1
-	int 80h
+	write ask, asklen
+	read a, 2
+	write ask, asklen
+	read b, 2
+	write ask, asklen
+	read c, 2
 
-	;print the input message
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, ask
-	mov edx, asklen
-	int 80h
+	mov al, [a]
+	mov bl, [b]
+	mov cl, [c]
 
-	;input second number
-	mov eax, 3
-	mov ebx, 2
-	mov ecx, num2
-	int 80h
+	cmp al, bl
+	je E
+	jg a_greater
+	jl b_greater
 
-	;print the input message
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, ask
-	mov edx, asklen
-	int 80h
-
-	;input second number
-	mov eax, 3
-	mov ebx, 2
-	mov ecx, num3
-	int 80h
-
-	;print the output message
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, tell
-	mov edx, telllen
-	int 80h
-
-	;compare the two numbers
-	mov eax, [num1]
-	mov ebx, [num2]
-	mov ecx, [num3]
-	cmp eax, ebx
+	a_greater:
+		cmp al, cl
+		je E
+		jg a_greatest
+		jl c_greatest
 	
-	JE E
-	JG L1  ;num1 > num2
-	JMP L2 ;num2 > num1
-
-	L1:
-	cmp eax, ecx
-	JE E
-	JG L3 ;num1>num3
-	JMP L4 ;num3>num1
-
-	L2:
-	cmp ebx, ecx
-	JE E
-	JG L5 ;num2>num3
-	JMP L4 ;num3>num2
+	b_greater:
+		cmp bl, cl
+		je E
+		jg b_greatest
+		jl c_greatest
 	
-	L3:
-	mov [large], eax
-	JMP PRINT
-
-	L4:
-	mov [large], ecx
-	JMP PRINT
-
-	L5:
-	mov [large], ebx
-	JMP PRINT
-
+	a_greatest:
+		write show, showlen
+		write a, 1
+		endl
+		jmp exit
+	
+	b_greatest:
+		write show, showlen
+		write b, 1
+		endl
+		jmp exit
+	
+	c_greatest:
+		write show, showlen
+		write c, 1
+		endl
+		jmp exit
+	
 	E:
-	mov [large], eax
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, eq
-	mov edx, eqlen
-	int 80h	
-
-	PRINT:
-	mov eax, 4
-	mov ebx, 1
-	mov ecx, large
-	int 80h
-
+		write eq, eqlen
+		endl
+	
+	exit:
+	; EXIT CALL
 	mov eax, 1
 	mov ebx, 0
 	int 80h
