@@ -1,123 +1,136 @@
-; odd even
-
-%macro write 2
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, %1
-    mov edx, %2
-    int 80h
-%endmacro
-
-%macro read 2
-    mov eax, 3
-    mov ebx, 2
-    mov ecx, %1 
-    mov edx, %2
-    int 80h
-%endmacro
+; FIND THE NUMBER OF ODD AND EVEN NUMBERS
 
 section .data
-	asknum db 'Enter the number of elements: '
-	asknumlen equ $-asknum
-	
-	ask db 'Enter elements of the array: '
-	asklen equ $-ask
-	
-	showe db 'Even: '
-	showelen equ $-showe
-	
-	showo db 'Odd: '
-	showolen equ $-showo
-	
-	nl db '', 10
+	nl db "", 10
 	nllen equ $-nl
-	
-	array times 10 dw 0
-	len equ 10
 
+	asksize db 'Enter size: '
+	asksizelen equ $-asksize
+
+	ask db 'Enter elements: '
+	asklen equ $-ask
+
+	showeven db 'Even: '
+	showevenlen equ $-showeven
+
+	showodd db 'Odd: '
+	showoddlen equ $-showodd
+
+	array times 100 db 0
+
+
+; WRITE MACRO
+%macro write 2
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+; READ MACRO
+%macro read 2
+	mov eax, 3
+	mov ebx, 2
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+; NEWLINE MACRO
+%macro endl 0
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, nl
+	mov edx, nllen
+	int 80h
+%endmacro
+
+; DECLARE VARIABLES
 section .bss
-	num resb 10
-	i resb 10
-	el resb 10
-	rem resb 5
-	neven resb 5
-	nodd resb 5
-	
+	count resb 1
+	n resb 1
+	element resb 1
+	nodd resb 1
+	neven resb 1
+
+
 section .text
 	global _start
 _start:
-	write asknum, asknumlen
-	read num, 10
-	
+
+	write asksize, asksizelen
+	read n, 2
+
 	write ask, asklen
-	
-	mov byte[neven], 0
+	endl
+
+	mov byte[count], 0
 	mov byte[nodd], 0
-	mov byte[i], 0
-	
+	mov byte[neven], 0
+
 	mov esi, array
-	
+
 	input:
-		read el, 2
-		mov ebx, [el]
+		read element, 2
+		mov ebx, [element]
 		mov [esi], ebx
-		
+
 		inc esi
-		inc byte[i]
-		
-		mov al, [i]
-		mov bl, [num]
+		inc byte[count]
+
+		mov al, [count]
+		mov bl, [n]
 		sub bl, '0'
-		
+
 		cmp al, bl
 		jl input
-		
-	mov byte[i], 0
-	mov esi, array
 	
+	mov byte[count], 0
+	mov esi, array
+
 	check:
 		mov al, [esi]
 		mov bl, '2'
 		sub bl, '0'
 		div bl
-		
+
 		cmp ah, 0
-		JE even
-		JMP odd
-		
-	even:
+		je inc_even
+		jmp inc_odd
+	
+	inc_even:
 		inc byte[neven]
-		jmp loop
+		jmp cont
 	
-	odd:
+	inc_odd:
 		inc byte[nodd]
-		jmp loop
+		jmp cont
 	
-	loop:
+	cont:
 		inc esi
-		inc byte[i]
-		
-		mov al, [i]
-		mov bl, [num]
+		inc byte[count]
+
+		mov al, [count]
+		mov bl, [n]
 		sub bl, '0'
+
 		cmp al, bl
-		JL check
-		JE output
-		
-	output:
+		jl check
+		je op
+	
+	op:
 		add [neven], byte '0'
 		add [nodd], byte '0'
-		
-		write showe, showelen
-		write neven, 5
-		
-		write nl, nllen
-		
-		write showo, showolen
-		write nodd, 5
-		
-		write nl, nllen
-		
-	mov eax, 1
-	int 80h
 
+		write showeven, showevenlen
+		write neven, 1
+		endl
+		write showodd, showoddlen
+		write nodd, 1
+		endl
+
+	; EXIT CALL
+	mov eax, 1
+	mov ebx, 0
+	int 80h

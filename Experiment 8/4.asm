@@ -1,119 +1,142 @@
-%macro write 2
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, %1
-    mov edx, %2
-    int 80h
-%endmacro
-
-%macro read 2
-    mov eax, 3
-    mov ebx, 2
-    mov ecx, %1 
-    mov edx, %2
-    int 80h
-%endmacro
+; NUMBER OF ELEMENTS GREATER THAN AND LESS THAN 5
 
 section .data
-	asknum db 'ENter number: '
-	asknumlen equ $-asknum
-	
+	nl db "", 10
+	nllen equ $-nl
+
+	asksize db 'Enter size: '
+	asksizelen equ $-asksize
+
 	ask db 'Enter: '
 	asklen equ $-ask
-	
-	mfive db 'Above 5: '
-	mfivelen equ $-mfive
-	
-	nmfive db 'Below 5: '
-	nmfivelen equ $-nmfive
-	
-	array times 10 dw 0
-	len equ 10
-	
-	nl db '', 10
-	nllen equ $-nl
-	
+
+	showabove db 'Number of elements greater than 5: '
+	showabovelen equ $-showabove
+
+	showbelow db 'Number of elements less than 5: '
+	showbelowlen equ $-showbelow
+
+	showeq db 'Number of elements equal to 5: '
+	showeqlen equ $-showeq
+
+	array times 100 db 0
+
+
+; WRITE MACRO
+%macro write 2
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+; READ MACRO
+%macro read 2
+	mov eax, 3
+	mov ebx, 2
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+; NEWLINE MACRO
+%macro endl 0
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, nl
+	mov edx, nllen
+	int 80h
+%endmacro
+
+; DECLARE VARIABLES
 section .bss
-	num resb 10
-	i resb 10
-	el resb 10
-	rem resb 5
-	h resb 5
-	l resb 5
-	
+	count resb 1
+	n resb 1
+	high resb 1
+	low resb 1
+	same resb 1
+	element resb 1
+
+
 section .text
 	global _start
 _start:
-	write asknum, asknumlen
-	read num, 10
-	
+	write asksize, asksizelen
+	read n, 2
+
 	write ask, asklen
-	
-	mov byte[h], 0
-	mov byte[l], 0
-	
-	mov byte[i], 0
-	
+
+	mov byte [count], 0
+	mov byte [high], 0
+	mov byte [low], 0
+	mov byte [same], 0
+
 	mov esi, array
-	
+
 	input:
-		read el, 2
-		mov ebx, [el]
-		mov [esi], ebx
-		
+		read element, 2
+		mov eax, [element]
+
+		mov [esi], eax
+
+		inc byte[count]
 		inc esi
-		inc byte[i]
-		mov al, [i]
-		mov bl, [num]
+
+		mov al, [count]
+		mov bl, [n]
 		sub bl, '0'
 		cmp al, bl
 		jl input
 	
-	mov byte[i], 0
 	mov esi, array
-	
+	mov byte [count], 0
+
 	check:
-		mov eax, [esi]
-		mov [el], eax
-		
-		mov al, [el]
+		mov al, [esi]
 		mov bl, '5'
 		cmp al, bl
-		
-		jl below
-		jmp above
-		
-	above:
-		inc byte[h]
-		jmp loop
+		jl lessthan
+		jg greaterthan
+		je equalto
+
+	lessthan:
+		inc byte[low]
+		jmp cont
 	
-	below:
-		inc byte[l]
-		jmp loop
+	greaterthan:
+		inc byte[high]
+		jmp cont
 	
-	loop:
+	equalto:
+		inc byte[same]
+
+	cont:
+
+		inc byte[count]
 		inc esi
-		inc byte[i]
-		
-		mov al, [i]
-		mov bl, [num]
+
+		mov al, [count]
+		mov bl, [n]
 		sub bl, '0'
 		cmp al, bl
 		jl check
-		je output
-	
-	output:
-		add [h], byte '0'
-		add [l], byte '0'
-		
-		write mfive, mfivelen
-		write h, 5
-		write nl, nllen
-		
-		write nmfive, nmfivelen
-		write l, 5
-		write nl, nllen
-		
+
+	add byte[high], '0'
+	add byte[low], '0'
+	add byte[same], '0'
+
+	write showabove, showabovelen
+	write high, 1
+	endl
+	write showbelow, showbelowlen
+	write low, 1
+	endl
+	write showeq, showeqlen
+	write same, 1
+	endl
+
+	; EXIT CALL
 	mov eax, 1
+	mov ebx, 0
 	int 80h
-	

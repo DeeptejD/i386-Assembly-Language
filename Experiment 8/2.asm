@@ -73,7 +73,7 @@ _start:
         sub bl, '0'
 
         cmp al, bl
-        je exit
+        je exit     ; count starts from zero thats why
         jmp input
     
     exit:
@@ -82,7 +82,7 @@ _start:
     mov byte [sum], 0
     
     fsum:
-        mov ebx, [esi]
+        mov bl, [esi]
         sub bl, '0'
         add byte [sum], bl
 
