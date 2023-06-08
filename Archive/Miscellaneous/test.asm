@@ -1,144 +1,94 @@
-section .data
-	msg1 db'Enter number 1',10
-	msg1l equ $- msg1
-
-	msg2 db'Enter number 2',10
-	msg2l equ $- msg2
-	
-	msg3 db'Not Congruent',10
-	msg3l equ $- msg3
-
-	msg4 db'Congruent',10
-	msg4l equ $- msg4
-	
-	nl db'',10
-	nll equ $- nl
-
-section .bss
-	a resb 1
-	b resb 1
-	count resb 1
-	trash resb 1
-	
-	div1 resb 1
-	div2 resb 1
-
-	temp resb 1
+;joshua
+%macro read 2
+	mov eax, 3
+	mov ebx, 2
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
 
 %macro write 2
-	mov eax , 4
-	mov ebx , 1
-	mov ecx , %1
-	mov edx , %2
+	mov eax, 4
+	mov ebx, 1
+	mov ecx, %1
+	mov edx, %2
 	int 80h
 %endmacro
 
-%macro read 2
-	mov eax , 3
-	mov ebx , 2
-	mov ecx , %1
-	mov edx , %2
-	int 80h
+section .data
+	ask db 'enter', 10
+	asklen equ $-ask
 
-	mov eax , 3
-	mov ebx, 2
-	mov ecx , trash
-	mov edx , 1
-	int 80h
-%endmacro
+	tell db 'two numbers are: ', 10
+	tellen equ $-tell
+
+	arr times 10 dw 0
+	arrl equ $-arr
+
+	nl db '', 10
+	nll equ $-nl
+
+section .bss
+	n resb 2
+	nlen equ $-n
+	i resb 2
+	ilen equ $-i
+	v resb 2
+	; vlen equ $-v
 
 section .text
-global _start
-_start :
-	write msg1 , msg1l
-	read a , 1
-	write msg2 , msg2l
-	read b , 1
+	global _start
+_start:
+	write ask, asklen
+	read n, nlen
 
-	mov al , [a]
-	mov bl , [b]
-	sub al , '0'
-	sub bl , '0'
+	write ask, asklen
 
-	mov [a] , al 
-	mov [b] , bl
-
-	mov cl , 2
+	mov al, [n]
+	sub al, '0'
+	mov [n], al
 	
-	mov al , [a]
-	mov bl , [b]
+	mov esi, arr
 
-	cmp al , bl
-	jg init
-		
-	mov dl , [b]
-	jmp chk			
+	mov byte [i], 0
 
-	init:
-	mov dl , [a]
+	loop1:
+		mov al, [i]
+		mov bl, [n]
+		cmp al, bl
+		JGE out1
 
-	chk:
-	cmp cl , dl
-	je NOT
-	mov al , [a]
-	mov ah , 0
-	mov bl , cl
-	div bl
-	mov [div1] , ah
+		read v, 2
+
+		xor ebx, ebx
+		mov ebx, [v]
+		mov [esi], ebx
+
+		inc esi
+		inc byte [i]
+		JMP loop1
 	
-	mov al , [b]
-	mov ah , 0
-	mov bl , cl
-	div bl
-	mov [div2] , ah
+	out1:
+		mov byte [i], 0
+		mov esi, arr
 
-	mov al , byte[div1]
-	mov bl , byte[div2]
-	
-	cmp al , bl
-	je YES
-	inc cl
-	jmp chk
+		loop2:
+			xor eax, eax
+			xor ebx, ebx
+			mov al, [i]
+			mov bl, [n]
+			cmp al, bl
+			jge out2
+			
+			write esi, 1
+			write nl, nll
 
-	YES:
-		add cl , '0'
-		mov [temp] , cl
-		write temp , 1
-		write nl , nll
-		write msg4 , msg4l
-		jmp end
-	
+	inc esi
+	inc byte [i]
+	JMP loop2
 
-	NOT:
-		write msg3 , msg3l
+	out2:
 
-	end:		
-		mov eax , 1
-		mov ebx , 0
-		int 80h
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	mov eax, 1
+	mov ebx, 0
+	int 80h
