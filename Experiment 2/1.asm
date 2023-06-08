@@ -1,9 +1,9 @@
 section .data
     nl db "", 10
-    nllen equ $-nl
+    nllen equ $-nl 
 
-    hello db 'hello world'
-    hellolen equ $-hello
+    hello db 'hello world' 
+    hellolen equ $-hello 
 
 
 ; WRITE MACRO

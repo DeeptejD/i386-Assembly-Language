@@ -4,7 +4,7 @@ section .data
 	nl db "", 10
 	nllen equ $-nl
 
-	ask db 'Enter: '
+	ask db 'Enter: ' 
 	asklen equ $-ask
 
 	show db 'Largest: '

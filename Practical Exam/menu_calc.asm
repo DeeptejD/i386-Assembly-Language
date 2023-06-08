@@ -158,7 +158,7 @@ PROD:
     add al, '0'
     mov [ans], al
     write showpro, showprolen
-    write ans, 1
+    write ans, 1 
     endl
 ret
 

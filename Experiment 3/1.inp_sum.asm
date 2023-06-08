@@ -3,8 +3,8 @@ section .data
     nllen equ $-nl
 
     ask db 'Enter: '
-    asklen equ $-ask
-
+    asklen equ $-ask 
+ 
     show db 'Sum: '
     showlen equ $-show
 
