@@ -73,7 +73,6 @@ _start:
     int 80h
 
 GCD:
-    cmp al, bl
     cmp al, 0
     je escape_0_al
     cmp bl, 0
@@ -83,7 +82,7 @@ GCD:
     cmp bl, 1
     je escape_1
 
-
+    cmp al, bl
     jg a_greater
 
     xchg al, bl

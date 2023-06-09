@@ -68,8 +68,8 @@ _start:
 
         xor eax, eax
         mov al, [n]
-        mov bl, [count]
         sub al, '0'
+        mov bl, [count]
         div bl
         cmp ah, 0
         je foundfactor
