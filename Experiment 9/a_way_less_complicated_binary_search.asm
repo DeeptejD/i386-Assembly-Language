@@ -74,7 +74,6 @@ section .bss
     lb resb 1
     ub resb 1
     mid resb 1
-    garbage resb 1
 
 section .text
     global _start
