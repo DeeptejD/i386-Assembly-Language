@@ -72,11 +72,6 @@ section .text
 _start:
     write asknum, asknumlen
     read n, 1
-    ; sub [n], byte '0'
-
-    ; input
-    ; mov eax, arr
-    ; mov edx, [n]
     call input
     
     endl
@@ -89,9 +84,6 @@ _start:
     write nl, nllen
     write srtd, srtedlen
     endl
-    ; display
-    ; mov eax, arr
-    ; mov edx, [n]
     call display
 
     return
