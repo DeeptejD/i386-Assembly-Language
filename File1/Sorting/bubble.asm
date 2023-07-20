@@ -188,4 +188,5 @@ display:
         inc byte[counter]
     jmp disp_loop
     return:
+    endl
 ret

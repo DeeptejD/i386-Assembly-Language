@@ -1,7 +1,7 @@
-; PERFECT NUMBER
+; a number is said to be a perfect number if it is equal to the sum of its positive divisors, except the number itself
 section .data
     nl db "", 10
-    nllen equ $-nl
+    nllen equ $-nl 
 
     ask db 'Enter: '
     asklen equ $-ask
@@ -11,7 +11,6 @@ section .data
 
     no db ' is not a perfect number'
     nolen equ $-no
-
 
 
 ; WRITE MACRO
@@ -41,73 +40,78 @@ section .data
     int 80h
 %endmacro
 
+
 ; DECLARE VARIABLES
 section .bss
-    count resb 1
+    a resb 1
     sum resb 1
-    n resb 1
-    temp resb 1
+    count resb 1
+
 
 section .text
     global _start
 _start:
-
+    
     write ask, asklen
-    read n, 2
+    read a, 2
+
+    mov al, [a]
+    sub al, '0'
+    mov [a], al
 
     mov byte[count], 0
     mov byte[sum], 0
 
     aliquot_sum:
-        ; as soon as the count becomes equal to the number we stop
         inc byte[count]
         mov al, [count]
-        mov bl, [n]
-        sub bl, '0'
+        mov bl, [a]
         cmp al, bl
         jge op
 
         xor eax, eax
-        mov al, [n]
-        sub al, '0'
+        mov al, [a]
         mov bl, [count]
         div bl
         cmp ah, 0
-        je foundfactor
+        je fact_found
         jmp aliquot_sum
-    
-    foundfactor:
-        mov al, [count]
-        add [sum], al
-        jmp aliquot_sum
-    
+
+        fact_found:
+            mov al, [sum]
+            mov bl, [count]
+            add al, bl
+            mov [sum], al
+            jmp aliquot_sum 
+
     op:
-        add [sum], byte '0'
-        write sum, 1
-        endl
-        write n, 1
-        endl
-        xor eax, eax
-        xor ebx, ebx
-        mov al, [sum]
-        mov bl, [n]
+        mov al, [a]
+        mov bl, [sum]
         cmp al, bl
         je is
         jmp isnot
 
     is:
-        write n, 1
+        mov al, [a]
+        add al, '0'
+        mov [a], al
+        write a, 1
         write yes, yeslen
         endl
         jmp exit
     
     isnot:
-        write n, 1
+        mov al, [a]
+        add al, '0'
+        mov [a], al
+        write a, 1
         write no, nolen
         endl
     
     exit:
-    ; EXIT CALL
+
+
+; EXIT CALL
     mov eax, 1
     mov ebx, 0
     int 80h

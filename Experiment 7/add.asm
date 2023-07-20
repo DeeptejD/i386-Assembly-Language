@@ -38,7 +38,7 @@ _start:
     write ask, asklen
     read num2, 5
 
-    mov esi, 2              ; used as an offser to access the third digit from the right in arrays num1 and num2
+    mov esi, 2              ; used as an offset to access the third digit from the right in arrays num1 and num2
     mov ecx, 3              ; represents the number of digits to be added
 
     clc                     ; clears scarry flag so no carry from a prev operation is included
